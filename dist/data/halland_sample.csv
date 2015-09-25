@@ -1,0 +1,7 @@
+source_id,source_name,source_class,target_id,target_name,target_class,value
+1_home,Halland,home,2_home,Halland,home,30
+1_home,Halland,home,2_away,Annan ort,away,70
+2_home,Halland,home,3_home,Halland,home,15
+2_home,Halland,home,3_away,Annan ort,away,15
+2_away,Annan ort,away,3_home,Halland,home,35
+2_away,Annan ort,away,3_away,Annan ort,away,35
