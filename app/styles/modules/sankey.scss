@@ -1,0 +1,30 @@
+
+/* Colors for nodes and links
+*/
+.node.home {
+    fill: $saco-turcos;
+}
+.link.home {
+    stroke: $saco-turcos;
+}
+
+.node.away {
+    fill: $saco-orange;
+}
+.link.away {
+    stroke: $saco-orange;
+}
+
+.node {
+    .label {
+        font-size: 12px;
+        fill: #FFF;
+        text-transform: uppercase;
+    }
+    rect {
+        cursor: default;
+    }
+    text {
+        text-shadow: none;
+    }
+}
