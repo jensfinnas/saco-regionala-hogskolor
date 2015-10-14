@@ -23,6 +23,29 @@
 
 
     <h1>Chart</h1>
+    <select id="region-selector">
+      <option value="Blekinge län">Blekinge län</option>
+      <option value="Dalarnas län">Dalarnas län</option>
+      <option value="Gotlands län">Gotlands län</option>
+      <option value="Gävleborgs län">Gävleborgs län</option>
+      <option value="Hallands län">Hallands län</option>
+      <option value="Jämtlands län">Jämtlands län</option>
+      <option value="Jönköpings län">Jönköpings län</option>
+      <option value="Kalmar län">Kalmar län</option>
+      <option value="Kronobergs län">Kronobergs län</option>
+      <option value="Norrbottens län">Norrbottens län</option>
+      <option value="Skåne län">Skåne län</option>
+      <option value="Stockholms län" selected>Stockholms län</option>
+      <option value="Södermanlands län">Södermanlands län</option>
+      <option value="Uppsala län">Uppsala län</option>
+      <option value="Värmlands län">Värmlands län</option>
+      <option value="Västerbottens län">Västerbottens län</option>
+      <option value="Västernorrlands län">Västernorrlands län</option>
+      <option value="Västmanlands län">Västmanlands län</option>
+      <option value="Västra Götalands län">Västra Götalands län</option>
+      <option value="Örebro län">Örebro län</option>
+      <option value="Östergötlands län">Östergötlands län</option>
+    </select>
     <div id="chart"></div>
 
 
@@ -31,6 +54,7 @@
     <!-- bower:js -->
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/d3-plugins-sankey/sankey.js"></script>
+    <script src="bower_components/d3-tip/index.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -45,14 +69,39 @@
     </script>
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
+        <script src="scripts/charts.sankey.js"></script>
+        <script src="scripts/main.js"></script>
         <script src="scripts/renderTemplate.js"></script>
         <script src="scripts/sankey.js"></script>
-        <script src="scripts/main.js"></script>
+        <script src="scripts/utils.js"></script>
         <!-- endbuild -->
 
     <script>
-    d3.csv("data/halland_sample.csv", function(error, data) {
-      var chart = new Sankey("#chart", data);
+    var opts = charts["follow-students-from-county"];
+    d3.csv(opts.data, function(error, csvData) {
+      function updateChart() {
+        // Clear container
+        d3.select("#chart").html("");
+
+        // Get data for the region
+        var selectedRegion = d3.select("#region-selector").node().value;
+        var data = csvData.filter(function(d) {
+          return d.home == selectedRegion;
+        })
+
+        // Draw new chart
+        var chart = new Sankey(
+          "#chart",
+          data,
+          opts.linkSentenceWriter,
+          {
+            "linkMetaColumns": ["home", "total"]
+          });
+      }
+
+      d3.select("#region-selector").on("change", updateChart)
+      
+      updateChart()
     })
     </script>
 

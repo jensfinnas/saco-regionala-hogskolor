@@ -1,10 +1,29 @@
 Sankey = (function() {
-  function Sankey(selector, data) {
+  function Sankey(selector, data, linkSentenceWriter, opts) {
     var self = this;
-    self.data = self.formatData(data);
 
-    // The main container
+    var defaultOpts = {
+      /*  Columns from the data array that will be available as meta data
+          in the links. Practical for tooltips etc.
+      */
+      "linkMetaColumns": []
+    }
+    self.opts = extend(defaultOpts, opts);
+
+    /*  Pass an array of objects as data. 
+        The function will transform the data to a node-link structure.
+    */
+    self.data = self.formatData(data);
+    
+    /*  A function that writes descriptive sentences about links
+    */
+    self.getLinkSentence = linkSentenceWriter;
+
+    /*  Draw the main container
+    */
     self.container = d3.select(selector);
+    
+    //  The chart will be as wide as the container
     var containerWidth = self.container[0][0].offsetWidth;
     
     self.chartContainer = self.container.append("div")
@@ -14,22 +33,21 @@ Sankey = (function() {
     self.width = (containerWidth - m.left - m.right);
     self.height = self.width * 0.7;
 
-    var formatNumber = d3.format(",.0f");    // zero decimal places
-    self.format = function(d) { return formatNumber(d) + " " + units; };
-    self.color = d3.scale.category20();
-
+    // Draw the svg canvas
     self.drawCanvas();
+
+    // Render the chart
     self.initChart();
 
     self.sentenceContainer = self.container.append("div")
       .attr("class", "sentence")
-
   }
 
   /* Takes an array of objects and returns a set of nodes
      and links.
   */
   Sankey.prototype.formatData = function(data) {
+    var self = this;
     var graph = {"nodes" : [], "links" : []};
     var _nodes = [];
     data.forEach(function (d) {
@@ -43,10 +61,19 @@ Sankey = (function() {
         "name": d.target_name,
         "class": d.target_class 
       });
-      graph.links.push({ "source": d.source_id,
-                         "target": d.target_id,
-                         "class": d.target_class,
-                         "value": +d.value });
+
+      var _link = {
+        "source": d.source_id,
+        "target": d.target_id,
+        "class": d.target_class,
+        "value": +d.value,
+        "meta": {},
+      };
+      self.opts.linkMetaColumns.forEach(function(column) {
+        _link.meta[column] = d[column]
+      });
+
+      graph.links.push(_link);
      });
 
     // return only the distinct / unique nodes
@@ -88,6 +115,23 @@ Sankey = (function() {
   Sankey.prototype.initChart = function() {
     var self = this;
 
+    // Set up tooltip
+    var tipLink = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([0, 0])
+      .direction(function(d) {
+        // Place label towards center of chart
+        if (d.target.x < self.width / 2) {
+          return "e";
+        }
+        else {
+          return "w";
+        }
+      })
+      .html(self.getLinkSentence);
+
+    self.chart.call(tipLink);
+
     // Set the sankey diagram properties
     var sankey = d3.sankey()
         .nodeWidth(36)
@@ -108,17 +152,8 @@ Sankey = (function() {
       .attr("d", path)
       .style("stroke-width", function(d) { return Math.max(1, d.dy); })
       .sort(function(a, b) { return b.dy - a.dy; })
-      .on("mouseover", function(d) {
-        var sentence = self.getSentence(d);
-        self.updateSentence(sentence);
-      })
-      .on("mouseout", function(d) {
-        self.updateSentence("");
-      });
-
-    // add the link titles
-      link.append("title")
-        .text(function(d) { return self.getSentence(d); });
+      .on("mouseover", tipLink.show)
+      .on("mouseout", tipLink.hide);
 
     // add in the nodes
       var node = self.chart.append("g").selectAll(".node")
@@ -152,50 +187,6 @@ Sankey = (function() {
   Sankey.prototype.updateSentence = function(sentence) {
     var self = this;
     self.sentenceContainer.html(sentence);
-  }
-
-  Sankey.prototype.getSentence = function(link) {
-    var self = this;
-    var template;
-    // Get the level of the target node
-    var level = link.target.id.split("_")[0];
-    var context = {
-      homeRegion: "Halland",
-    }
-
-    if (level == "2") {
-      var _study = link.target.id.split("_")[1];
-      context.value = Math.round( link.value / 100 * 100 );
-      context.studyRegion = (_study == "home") ? "i " + context.homeRegion : "på annan ort";
-      template = "{{ value }} procent av alla högskolestudenter från {{ homeRegion }} började studera {{ studyRegion }}."
-    }
-    else if (level == "3") {
-      var _study = link.source.id.split("_")[1];
-      var _live = link.target.id.split("_")[1];
-      context.value = Math.round( link.value / link.source.value * 100 );
-      context.studyRegion = (_study == "home") ? "i " + context.homeRegion : "på annan ort";
-      context.liveRegion = (_live == "home") ? "i " + context.homeRegion : "på annan ort";
-      template = "Av de studenter från {{ homeRegion }} som studerade {{ studyRegion }} "
-      
-      // case: study home, live home
-      if (_live == _study && _live == "home") {
-        template += "bodde {{ value }} procent kvar i länet efter 10 år."
-      }
-      // case: study away, live at home
-      else if ("home" != _study && _live == "home") {
-        template += "återvände {{ value }} procent till {{ homeRegion }}."
-      }
-      // case: study home, live away
-      else if(_study == "home" && _live != "home") {
-        template += "flyttade {{ value }} procent till annan ort."
-      }
-      // case: study away, live away 
-      else {
-        template += "bodde {{ value }} procent kvar utanför länet."
-      }
-
-    }
-    return renderTemplate(template, context);
   }
 
   return Sankey;
