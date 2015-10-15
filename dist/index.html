@@ -1,10 +1,44 @@
-<!DOCTYPE html> <html class=no-js> <head> <meta charset=utf-8> <title>saco regionala hogskolor</title> <meta name=description content=""> <meta name=viewport content="width=device-width"> <link rel="shortcut icon" href=/6df2b309.favicon.ico> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel=stylesheet href=styles/d382c971.vendor.css> <link rel=stylesheet href=styles/7afc5e8a.main.css>  <body> <!--[if lt IE 10]>
+<!DOCTYPE html> <html class=no-js> <head> <meta charset=utf-8> <title>saco regionala hogskolor</title> <meta name=description content=""> <meta name=viewport content="width=device-width"> <link rel="shortcut icon" href=/6df2b309.favicon.ico> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel=stylesheet href=styles/d382c971.vendor.css> <link rel=stylesheet href=styles/b46dcb2c.main.css>  <body> <!--[if lt IE 9]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]--> <h1>Chart</h1> <div id=chart></div> <script src=scripts/cb299030.vendor.js></script> <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. --> <script>/*(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-      e.src='//www.google-analytics.com/analytics.js';
-      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-      ga('create','UA-XXXXX-X');ga('send','pageview');*/</script> <script src=scripts/7595f39d.main.js></script> <script>d3.csv("data/halland_sample.csv", function(error, data) {
-      var chart = new Sankey("#chart", data);
+    <![endif]--> <select id=region-selector> <option value="Blekinge län">Blekinge län <option value="Dalarnas län">Dalarnas län <option value="Gotlands län">Gotlands län <option value="Gävleborgs län">Gävleborgs län <option value="Hallands län">Hallands län <option value="Jämtlands län">Jämtlands län <option value="Jönköpings län">Jönköpings län <option value="Kalmar län">Kalmar län <option value="Kronobergs län">Kronobergs län <option value="Norrbottens län">Norrbottens län <option value="Skåne län">Skåne län <option value="Stockholms län" selected>Stockholms län <option value="Södermanlands län">Södermanlands län <option value="Uppsala län">Uppsala län <option value="Värmlands län">Värmlands län <option value="Västerbottens län">Västerbottens län <option value="Västernorrlands län">Västernorrlands län <option value="Västmanlands län">Västmanlands län <option value="Västra Götalands län">Västra Götalands län <option value="Örebro län">Örebro län <option value="Östergötlands län">Östergötlands län </select> <div id=follow-students-from-county class=chart-container> <h2 class=title></h2> <div class=description></div> <div class=chart></div> <div class=conclusions></div> </div> <div id=follow-students-in-county class=chart-container> <h2 class=title></h2> <div class=description></div> <div class=chart></div> <div class=conclusions></div> </div> <script src=scripts/255b48fa.vendor.js></script> <script src=scripts/b772233e.main.js></script> <!-- Saco typography --> <script type=text/javascript src=//use.typekit.net/zxg8sjd.js></script> <script type=text/javascript>try { Typekit.load(); } catch (e) { console.log(e); }</script> <script>function updateCharts() {
+      charts.forEach(function(chart) {
+        var chartContainer = d3.select("#" + chart.id);
+
+        // Clear containers
+        chartContainer.select(".chart").html("");
+
+        // Get data for the region
+        var selectedRegion = d3.select("#region-selector").node().value;
+        var data = chart.data.filter(function(d) {
+          return d.home == selectedRegion;
+        })
+
+        // Draw new chart
+        var chartSelector = "#" + chart.id + " .chart";
+        chart.chart = new Sankey(chartSelector, data, chart.writers.linkSentence, {
+            "metaColumns": ["home", "total"],
+            "xLabels": chart.xLabels
+        });
+
+        chartContainer.select(".title").html(chart.writers.title(data));
+        chartContainer.select(".description").html(chart.writers.description(data));
+        chartContainer.select(".conclusions").html(chart.writers.conclusions(data));
+      });
+      
+    }
+
+    var loadedDataset = [];
+    charts.forEach(function(chart) {
+      d3.csv(chart.csv, function(error, csvData) {
+        chart.data = csvData;
+
+        loadedDataset.push(chart);
+        if (loadedDataset.length == charts.length) {
+          updateCharts();
+          d3.select("#region-selector").on("change", function() {
+            updateCharts();
+          })
+        }
+
+      })
     })</script>  
