@@ -21,10 +21,20 @@
         fill: #FFF;
         text-transform: uppercase;
     }
+    .value {
+        fill: #fff;
+    }
     rect {
         cursor: default;
     }
     text {
         text-shadow: none;
     }
+}
+
+/* labels
+*/
+.x-label {
+    font-size: 12px;
+    fill: #666;
 }

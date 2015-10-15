@@ -6,7 +6,8 @@ Sankey = (function() {
       /*  Columns from the data array that will be available as meta data
           in the links. Practical for tooltips etc.
       */
-      "linkMetaColumns": []
+      "metaColumns": [],
+      "xLabels": []
     }
     self.opts = extend(defaultOpts, opts);
 
@@ -29,7 +30,7 @@ Sankey = (function() {
     self.chartContainer = self.container.append("div")
       .attr('class', 'chart');
 
-    self.margin = m = {top: 10, right: 5, bottom: 5, left: 5};
+    self.margin = m = {top: 10, right: 5, bottom: 40, left: 5};
     self.width = (containerWidth - m.left - m.right);
     self.height = self.width * 0.7;
 
@@ -51,16 +52,18 @@ Sankey = (function() {
     var graph = {"nodes" : [], "links" : []};
     var _nodes = [];
     data.forEach(function (d) {
-      _nodes.push({ 
+      var _source = { 
         "id": d.source_id,
         "name": d.source_name,
-        "class": d.source_class 
-      });
-      _nodes.push({
+        "class": d.source_class,
+        "meta": {}
+      }
+      var _target = {
         "id": d.target_id,
         "name": d.target_name,
-        "class": d.target_class 
-      });
+        "class": d.target_class,
+        "meta": {}
+      }
 
       var _link = {
         "source": d.source_id,
@@ -69,10 +72,14 @@ Sankey = (function() {
         "value": +d.value,
         "meta": {},
       };
-      self.opts.linkMetaColumns.forEach(function(column) {
-        _link.meta[column] = d[column]
+      self.opts.metaColumns.forEach(function(column) {
+        _link.meta[column] = d[column];
+        _source.meta[column] = d[column];
+        _target.meta[column] = d[column];
       });
 
+      _nodes.push(_source);
+      _nodes.push(_target);
       graph.links.push(_link);
      });
 
@@ -118,10 +125,19 @@ Sankey = (function() {
     // Set up tooltip
     var tipLink = d3.tip()
       .attr('class', 'd3-tip')
-      .offset([0, 0])
+      .offset(function(d) {
+        // Hack: Tooltips are drawn outside of canvas when only two levels
+        // Manually displace tooltips in those cases
+        if (d.source.x < 160 && d.target.x > self.width / 2) {
+          return [0, 160];
+        }
+        else {
+          return [0, 0];
+        }
+      })
       .direction(function(d) {
         // Place label towards center of chart
-        if (d.target.x < self.width / 2) {
+        if (d.target.x <= self.width / 2) {
           return "e";
         }
         else {
@@ -147,7 +163,9 @@ Sankey = (function() {
 
     var link = self.chart.append("g").selectAll(".link")
       .data(self.data.links)
-      .enter().append("path")
+      .enter();
+
+    link.append("path")
       .attr("class", function(d) { return "link " + d.class; })
       .attr("d", path)
       .style("stroke-width", function(d) { return Math.max(1, d.dy); })
@@ -155,34 +173,86 @@ Sankey = (function() {
       .on("mouseover", tipLink.show)
       .on("mouseout", tipLink.hide);
 
-    // add in the nodes
-      var node = self.chart.append("g").selectAll(".node")
-          .data(self.data.nodes)
-        .enter().append("g")
-          .attr("class", function(d) { return "node " + d.class; })
-          .attr("transform", function(d) { 
-          return "translate(" + d.x + "," + d.y + ")"; });
+    /*
+    // label at link target
+    link.append("text")
+      .attr("class", "label")
+      .attr("y", function(d) { 
+        console.log(formatPercent(d.value / d.meta.total), Math.round(d.ty), Math.round(d.target.dy), Math.round(d.target.y))
+        return d.target.y + d.ty + (d.target.dy + d.target.y - d.ty) / 2; 
+      })
+      .attr("x", function(d) { return d.target.x; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .text(function(d) {
+        return formatPercent(d.value / d.meta.total)
+      })*/
 
-    // add the rectangles for the nodes
-      node.append("rect")
-          .attr("height", function(d) { return d.dy; })
-          .attr("width", sankey.nodeWidth())
-        .append("title")
-          .text(function(d) { 
-          return d.name + "\n" + d.value; });
+    // add in the nodes
+    var node = self.chart.append("g").selectAll(".node")
+        .data(self.data.nodes)
+      .enter().append("g")
+        .attr("class", function(d) { return "node " + d.class; })
+        .attr("transform", function(d) { 
+        return "translate(" + d.x + "," + d.y + ")"; });
+
+  // add the rectangles for the nodes
+    node.append("rect")
+        .attr("height", function(d) { return d.dy; })
+        .attr("width", sankey.nodeWidth())
+      .append("title")
+        .text(function(d) { 
+        return d.name + "\n" + d.value; });
 
     // add in the title for the nodes
-      node.append("text")
-        .attr("x", function(d) { return -d.dy / 2 })
-        .attr("y", function(d) { return sankey.nodeWidth() / 2; })
-        .attr("dy", ".35em")
-        .attr("text-anchor", "middle")
-        .attr("transform", "rotate(-90)")
-        .attr("class", "label")
-        .text(function(d) { return d.name; })
+    node.append("text")
+      .attr("x", function(d) { return -d.dy / 2 })
+      .attr("y", function(d) { return sankey.nodeWidth() / 2; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .attr("transform", "rotate(-90)")
+      .attr("class", "label")
+      .text(function(d) { return d.name; })
+      /* shorten long labels
+      */
+      .filter(function(d) {
+        var rect = this.parentElement.getElementsByTagName("rect")[0];
+        var label = d3.select(this);
+        var rectSize = +rect.getAttribute("height")
+        var labelSize = this.offsetWidth;
+
+        if (labelSize > rectSize * 0.9) {
+          var numberOfChars = Math.round(rectSize / labelSize * label.text().length) - 3;
+          label.text(label.text().substring(0, numberOfChars).trim() + "...");
+        }
+      })
         /*.filter(function(d) { return d.x < self.width / 2; })
           .attr("x", 6 + sankey.nodeWidth())
           .attr("text-anchor", "start");*/
+
+      // Add x-labels
+      self.chart.selectAll("text.x-label")
+        .data(self.opts.xLabels)
+        .enter()
+        .append("text")
+        .attr("y", self.height + 5)
+        .attr("dy", ".75em")
+        .attr("x", function(d,i) {
+          return i / (self.opts.xLabels.length - 1) * self.width;
+        })
+        .attr("text-anchor", function(d,i) {
+          if (i < (self.opts.xLabels.length - 1) / 2) {
+            return "start";
+          }
+          else if (i > (self.opts.xLabels.length - 1) / 2) {
+            return "end";
+          }
+          else {
+            return "middle";
+          }
+        })
+        .attr("class", "x-label")
+        .text(function(d) { return d })
   };
   Sankey.prototype.updateSentence = function(sentence) {
     var self = this;
