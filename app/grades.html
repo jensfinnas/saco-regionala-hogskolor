@@ -46,14 +46,14 @@
         <option value="Östergötlands län">Östergötlands län</option>
       </select>
 
-      <div id="follow-students-from-county" class="chart-container">
+      <div id="high-grades" class="tree-chart-container">
         <h2 class="title"></h2>
         <div class="description"></div>
         <div class="chart"></div>
         <div class="conclusions"></div>       
       </div>
 
-      <div id="follow-students-in-county" class="chart-container">
+      <div id="low-grades" class="tree-chart-container">
         <h2 class="title"></h2>
         <div class="description"></div>
         <div class="chart"></div>
@@ -73,10 +73,8 @@
 
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
-        <script src="scripts/charts.sankey.js"></script>
-        <script src="scripts/main.js"></script>
         <script src="scripts/renderTemplate.js"></script>
-        <script src="scripts/sankey.js"></script>
+        <script src="scripts/tree.js"></script>
         <script src="scripts/utils.js"></script>
         <!-- endbuild -->
 
@@ -86,34 +84,50 @@
 
 
     <script>
-    function updateCharts() {
-      charts.forEach(function(chart) {
-        var chartContainer = d3.select("#" + chart.id);
-
-        // Clear containers
-        chartContainer.select(".chart").html("");
-
-        // Get data for the region
+    function updateCharts(data) {
         var selectedRegion = d3.select("#region-selector").node().value;
-        var data = chart.data.filter(function(d) {
-          return d.home == selectedRegion;
-        })
+        data = data
+            .filter(function(d) { return d.home == selectedRegion; })
+            .sort(function(a, b) {
+                return d3.descending(a.value, b.value);
+            });
 
-        // Draw new chart
-        var chartSelector = "#" + chart.id + " .chart";
-        chart.chart = new Sankey(chartSelector, data, chart.writers.linkSentence, {
-            "metaColumns": ["home", "total"],
-            "xLabels": chart.xLabels
+        // high grades
+        var highGradesData = data.filter(function(d) {
+          return d.parent == "high";
+        });
+        highGradesData.unshift({
+            "name": "high",
+            "parent": null,
+            "value": 0.2
         });
 
-        chartContainer.select(".title").html(chart.writers.title(data));
-        chartContainer.select(".description").html(chart.writers.description(data));
-        chartContainer.select(".conclusions").html(chart.writers.conclusions(data));
-      });
-      
+        // low grades
+        var lowGradesData = data.filter(function(d) {
+          return d.parent == "low";
+        })
+        lowGradesData.unshift({
+            "name": "low",
+            "parent": null,
+            "value": 0.2
+        });
+
+        // Get max value to set same domain for both charts
+        var max = d3.max(data.map(function(d) { return d.value; }));
+        var domain = [0.01, max];
+        var xLabels = ["Betyg i gymnasiet", "Studieort"]
+        new Tree("#high-grades .chart", highGradesData, {
+            domain: domain,
+            xLabels: xLabels
+        });
+        new Tree("#low-grades .chart", lowGradesData, {
+            domain: domain,
+            xLabels: xLabels
+        });
+            
     }
 
-    var loadedDataset = [];
+    /*var loadedDataset = [];
     charts.forEach(function(chart) {
       d3.csv(chart.csv, function(error, csvData) {
         chart.data = csvData;
@@ -127,6 +141,18 @@
         }
 
       })
+    })*/
+
+    d3.csv("data/grades_students.csv", function(error, csvData) {
+        // Format data
+        csvData = csvData.map(function(d) {
+            d.value = parseFloat(d.value.replace(",","."));
+            return d;
+        })
+        updateCharts(csvData);
+        d3.select("#region-selector").on("change", function() {
+            updateCharts(csvData);
+        })
     })
 
     </script>

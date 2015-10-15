@@ -2,17 +2,25 @@
 /* Colors for nodes and links
 */
 .node.home {
-    fill: $saco-turcos;
+    rect, circle {
+        fill: $saco-turcos;
+    }
 }
 .link.home {
-    stroke: $saco-turcos;
+    rect, circle {
+        stroke: $saco-turcos;
+    }
 }
 
 .node.away {
-    fill: $saco-orange;
+    rect, circle {
+        fill: $saco-orange;        
+    }
 }
 .link.away {
-    stroke: $saco-orange;
+    rect, circle {
+        stroke: $saco-orange;
+    }
 }
 
 .node {
