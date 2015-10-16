@@ -9,10 +9,22 @@ formatPercent = d3.format("%");
 formatPercentText = function(value) {
     return formatPercent(value).replace("%", " procent");
 }
+formatLargeNum = locale.numberFormat(",");
 
 numberToText = function(value) {
-    var numbers = ["noll", "ett", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio"];
+    var numbers = ["noll", "en", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio"];
     return numbers[value];
+}
+
+// turn a percentage to rounded text ("fyra av tio")
+Number.prototype.textifyPercent = function() {
+    var value = this;
+    var rounded = Math.round(value * 10);
+    return numberToText(rounded) + " av tio";
+}
+
+shortCounty = function(str) {
+    return str.replace("s län","").replace(" län", "");
 }
 
 String.prototype.capitalize = function() {
