@@ -11,6 +11,8 @@ Sankey = (function() {
     }
     self.opts = extend(defaultOpts, opts);
 
+    self.isMobile = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i);
+
     /*  Pass an array of objects as data. 
         The function will transform the data to a node-link structure.
     */
@@ -126,6 +128,9 @@ Sankey = (function() {
     var tipLink = d3.tip()
       .attr('class', 'd3-tip')
       .offset(function(d) {
+        if (self.isMobile) {
+          return [-(d.tty - d.ty) / 2, 0];
+        };
         // Hack: Tooltips are drawn outside of canvas when only two levels
         // Manually displace tooltips in those cases
         if (d.source.x < 160 && d.target.x > self.width / 2) {
@@ -136,6 +141,10 @@ Sankey = (function() {
         }
       })
       .direction(function(d) {
+        // Always place tooltip above on mobile device
+        if (self.isMobile) {
+          return "n"
+        }
         // Place label towards center of chart
         if (d.target.x <= self.width / 2) {
           return "e";
@@ -161,7 +170,10 @@ Sankey = (function() {
       .links(self.data.links)
       .layout(32);
 
-    var link = self.chart.append("g").selectAll(".link")
+    var link = self.chart
+      .append("g")
+      .attr("class", "links")
+      .selectAll(".link")
       .data(self.data.links)
       .enter();
 
@@ -173,20 +185,27 @@ Sankey = (function() {
       .on("mouseover", tipLink.show)
       .on("mouseout", tipLink.hide);
 
-    /*
+    
     // label at link target
     link.append("text")
       .attr("class", "label")
       .attr("y", function(d) { 
-        console.log(formatPercent(d.value / d.meta.total), Math.round(d.ty), Math.round(d.target.dy), Math.round(d.target.y))
-        return d.target.y + d.ty + (d.target.dy + d.target.y - d.ty) / 2; 
+        return d.target.y + d.tty - (d.tty - d.ty) / 2;
       })
       .attr("x", function(d) { return d.target.x; })
+      .attr("dx", -5)
       .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
+      .attr("text-anchor", "end")
       .text(function(d) {
         return formatPercent(d.value / d.meta.total)
-      })*/
+      })
+
+    /*link.append("circle")
+      .attr("r", 3)
+      .attr("cx", function(d) { return d.target.x; })
+      .attr("cy", function(d) { 
+        return d.target.y + d.tty - (d.tty - d.ty) / 2;
+      });*/
 
     // add in the nodes
     var node = self.chart.append("g").selectAll(".node")
