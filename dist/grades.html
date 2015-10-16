@@ -1,0 +1,50 @@
+<!DOCTYPE html> <html class=no-js> <head> <meta charset=utf-8> <title>saco regionala hogskolor</title> <meta name=description content=""> <meta name=viewport content="width=device-width"> <link rel="shortcut icon" href=/6df2b309.favicon.ico> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel=stylesheet href=styles/53d5d3c2.main.css>  <body> <!--[if lt IE 9]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]--> <div class=container> <select id=region-selector> <option value="Blekinge län">Blekinge län <option value="Dalarnas län">Dalarnas län <option value="Gotlands län">Gotlands län <option value="Gävleborgs län">Gävleborgs län <option value="Hallands län">Hallands län <option value="Jämtlands län">Jämtlands län <option value="Jönköpings län">Jönköpings län <option value="Kalmar län">Kalmar län <option value="Kronobergs län">Kronobergs län <option value="Norrbottens län">Norrbottens län <option value="Skåne län">Skåne län <option value="Stockholms län" selected>Stockholms län <option value="Södermanlands län">Södermanlands län <option value="Uppsala län">Uppsala län <option value="Värmlands län">Värmlands län <option value="Västerbottens län">Västerbottens län <option value="Västernorrlands län">Västernorrlands län <option value="Västmanlands län">Västmanlands län <option value="Västra Götalands län">Västra Götalands län <option value="Örebro län">Örebro län <option value="Östergötlands län">Östergötlands län </select> <div id=tree-chart-container> <h2 class=title>Vad hände med gymnasisterna från XXXX?</h2> <div class=description></div> <div id=high-grades class=chart></div> <div id=low-grades class=chart></div> <div class=conclusions></div> </div> </div> <script src=scripts/a89a7ab7.vendor.js></script> <script src=scripts/19d35955.main.js></script> <!-- Saco typography --> <script type=text/javascript src=//use.typekit.net/zxg8sjd.js></script> <script type=text/javascript>try { Typekit.load(); } catch (e) { console.log(e); }</script> <script>function updateCharts(data) {
+        var selectedRegion = d3.select("#region-selector").node().value;
+        data = data
+            .filter(function(d) { return d.home == selectedRegion; })
+            .sort(function(a, b) {
+                return d3.descending(a.value, b.value);
+            });
+
+        // Get max value to set same domain for both charts
+        var max = d3.max(data.map(function(d) { return d.value; }));
+        var domain = [0, max];
+
+        ["high", "low"].forEach(function(end) {
+            // high grades
+            var filteredData = data.filter(function(d) {
+              return d.parent == end;
+            });
+            filteredData.unshift({
+                "name": end,
+                "parent": null,
+                "value": 0.2
+            });
+
+            var xLabels = ["Betyg i gymnasiet", "Studieort"]
+            new Tree("#" + end + "-grades", filteredData, {
+                domain: domain,
+                //xLabels: xLabels
+            });
+        });
+
+        d3.select("#tree-chart-container .title").html(treeWriters.title(data))
+        d3.select("#tree-chart-container .description").html(treeWriters.description(data))
+
+    
+            
+    }
+
+    d3.csv("data/grades_students.csv", function(error, csvData) {
+        // Format data
+        csvData = csvData.map(function(d) {
+            d.value = parseFloat(d.value.replace(",","."));
+            return d;
+        })
+        updateCharts(csvData);
+        d3.select("#region-selector").on("change", function() {
+            updateCharts(csvData);
+        })
+    })</script>  
