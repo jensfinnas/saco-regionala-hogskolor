@@ -1,0 +1,45 @@
+$sm-breakpoint: 400px;
+
+#tree-chart-container {
+    .node.home {
+        rect, circle {
+            fill: $saco-turcos;
+        }
+    }
+    .link.home {
+        rect, circle {
+            stroke: $saco-turcos;
+        }
+    }
+
+    .node.away {
+        rect, circle {
+            fill: $saco-orange;        
+        }
+    }
+    .link.away {
+        rect, circle {
+            stroke: $saco-orange;
+        }
+    }
+    .label {
+        fill: #333;
+    }
+    .link {
+      fill: none;
+      stroke: #000;
+      stroke-opacity: .2;
+    }
+}
+
+
+
+@media screen and (max-width: $sm-breakpoint) {
+  #tree-chart-container {
+    .chart {
+        text {
+            font-size: 12px;
+        }
+    }
+  }
+}

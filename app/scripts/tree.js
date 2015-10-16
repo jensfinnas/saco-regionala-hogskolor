@@ -4,7 +4,8 @@ Tree = (function() {
 
     var defaultOpts = {
       "domain": [0,1],
-      "xLabels": []
+      "xLabels": [],
+      "minHeight": 180
     };
     self.opts = extend(defaultOpts, opts);
 
@@ -23,17 +24,23 @@ Tree = (function() {
     
     //  The chart will be as wide as the container
     var containerWidth = self.container[0][0].offsetWidth;
+    var smallScreen = containerWidth < 400;
     
     self.chartContainer = self.container.append("div")
       .attr('class', 'chart');
 
-    self.margin = m = {top: 10, right: 200, bottom: 30, left: 120};
+    self.margin = m = {
+      top: 10,
+      right: smallScreen ? 150 : 200,
+      bottom: 30,
+      left: smallScreen ? 90 : 120
+    };
     self.width = (containerWidth - m.left - m.right);
-    self.height = Math.max(self.width * 1, 220);
+    self.height = Math.max(self.width * 1, self.opts.minHeight);
 
     self.max = d3.max(data.map(function(d) { return d.value; }));
 
-    self.nodeScale = d3.scale.log()
+    self.nodeScale = d3.scale.sqrt()
       .domain(self.opts.domain)
       .range([1, self.height / self.data[0].children.length]);
 
@@ -146,9 +153,9 @@ Tree = (function() {
       .attr("fill-opacity", 0.7);
 
     var labels = nodeEnter.append("text")
+      .attr("class", "label")
       .attr("x", function(d) {
         var dist = self.nodeScale(self.max) * 0.75 + 5;
-        console.log(self.max, dist)
         return d.children || d._children ? -dist : dist; })
       .attr("dy", ".35em")
       .attr("text-anchor", function(d) { 
@@ -160,7 +167,7 @@ Tree = (function() {
         else if (d.name == "high") {
           return "Elever med höga betyg";
         }
-        return d.name; 
+        return shortCounty(d.name) + ", " + formatPercent(d.value); 
       });
     
     labels.filter(function(d) {

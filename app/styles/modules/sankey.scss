@@ -1,72 +1,74 @@
+.sankey {
+    /* Styling from lib
+    */
+    .node rect {
+      cursor: move;
+      fill-opacity: .9;
+      shape-rendering: crispEdges;
+    }
 
-/* Styling from lib
-*/
-.node rect {
-  cursor: move;
-  fill-opacity: .9;
-  shape-rendering: crispEdges;
-}
+    .node text {
+      pointer-events: none;
+      text-shadow: 0 1px 0 #fff;
+    }
 
-.node text {
-  pointer-events: none;
-  text-shadow: 0 1px 0 #fff;
-}
+    .link {
+      fill: none;
+      stroke: #000;
+      stroke-opacity: .2;
+    }
 
-.link {
-  fill: none;
-  stroke: #000;
-  stroke-opacity: .2;
-}
+    .link:hover {
+      stroke-opacity: .5;
+    }
 
-.link:hover {
-  stroke-opacity: .5;
-}
+    /* Colors for nodes and links
+    */
+    .node.home {
+        fill: $saco-turcos;
+    }
+    .link.home {
+        stroke: $saco-turcos;
+    }
 
-/* Colors for nodes and links
-*/
-.node.home {
-    fill: $saco-turcos;
-}
-.link.home {
-    stroke: $saco-turcos;
-}
+    .node.away {
+        fill: $saco-orange;        
+    }
+    .link.away {
+        stroke: $saco-orange;
+    }
 
-.node.away {
-    fill: $saco-orange;        
-}
-.link.away {
-    stroke: $saco-orange;
-}
+    .node {
+        .label {
+            font-size: 12px;
+            fill: #FFF;
+            text-transform: uppercase;
+        }
+        .value {
+            fill: #fff;
+        }
+        rect {
+            cursor: default;
+        }
+        text {
+            text-shadow: none;
+        }
+    }
 
-.node {
-    .label {
+    .links {
+        .label {
+            font-size: 11px;
+            font-weight: bold;
+        }
+    }
+
+
+
+    /* labels
+    */
+    .x-label {
         font-size: 12px;
-        fill: #FFF;
-        text-transform: uppercase;
-    }
-    .value {
-        fill: #fff;
-    }
-    rect {
-        cursor: default;
-    }
-    text {
-        text-shadow: none;
-    }
+        fill: #666;
+    }    
 }
 
-.links {
-    .label {
-        font-size: 11px;
-        font-weight: bold;
-    }
-}
-
-
-
-/* labels
-*/
-.x-label {
-    font-size: 12px;
-    fill: #666;
-}

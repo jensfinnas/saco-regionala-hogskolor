@@ -9,7 +9,6 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/d3-plugins-sankey/sankey.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -46,17 +45,11 @@
         <option value="Östergötlands län">Östergötlands län</option>
       </select>
 
-      <div id="high-grades" class="tree-chart-container">
-        <h2 class="title"></h2>
+      <div id="tree-chart-container">
+        <h2 class="title">Vad hände med gymnasisterna från XXXX?</h2>
         <div class="description"></div>
-        <div class="chart"></div>
-        <div class="conclusions"></div>       
-      </div>
-
-      <div id="low-grades" class="tree-chart-container">
-        <h2 class="title"></h2>
-        <div class="description"></div>
-        <div class="chart"></div>
+        <div id="high-grades" class="chart"></div>
+        <div id="low-grades" class="chart"></div>
         <div class="conclusions"></div>       
       </div>
     </div>
@@ -66,15 +59,16 @@
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/d3/d3.js"></script>
-    <script src="bower_components/d3-plugins-sankey/sankey.js"></script>
     <script src="bower_components/d3-tip/index.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
+        <script src="scripts/locale.js"></script>
         <script src="scripts/renderTemplate.js"></script>
         <script src="scripts/tree.js"></script>
+        <script src="scripts/treeWriters.js"></script>
         <script src="scripts/utils.js"></script>
         <!-- endbuild -->
 
@@ -92,56 +86,34 @@
                 return d3.descending(a.value, b.value);
             });
 
-        // high grades
-        var highGradesData = data.filter(function(d) {
-          return d.parent == "high";
-        });
-        highGradesData.unshift({
-            "name": "high",
-            "parent": null,
-            "value": 0.2
-        });
-
-        // low grades
-        var lowGradesData = data.filter(function(d) {
-          return d.parent == "low";
-        })
-        lowGradesData.unshift({
-            "name": "low",
-            "parent": null,
-            "value": 0.2
-        });
-
         // Get max value to set same domain for both charts
         var max = d3.max(data.map(function(d) { return d.value; }));
-        var domain = [0.01, max];
-        var xLabels = ["Betyg i gymnasiet", "Studieort"]
-        new Tree("#high-grades .chart", highGradesData, {
-            domain: domain,
-            xLabels: xLabels
+        var domain = [0, max];
+
+        ["high", "low"].forEach(function(end) {
+            // high grades
+            var filteredData = data.filter(function(d) {
+              return d.parent == end;
+            });
+            filteredData.unshift({
+                "name": end,
+                "parent": null,
+                "value": 0.2
+            });
+
+            var xLabels = ["Betyg i gymnasiet", "Studieort"]
+            new Tree("#" + end + "-grades", filteredData, {
+                domain: domain,
+                //xLabels: xLabels
+            });
         });
-        new Tree("#low-grades .chart", lowGradesData, {
-            domain: domain,
-            xLabels: xLabels
-        });
+
+        d3.select("#tree-chart-container .title").html(treeWriters.title(data))
+        d3.select("#tree-chart-container .description").html(treeWriters.description(data))
+
+    
             
     }
-
-    /*var loadedDataset = [];
-    charts.forEach(function(chart) {
-      d3.csv(chart.csv, function(error, csvData) {
-        chart.data = csvData;
-
-        loadedDataset.push(chart);
-        if (loadedDataset.length == charts.length) {
-          updateCharts();
-          d3.select("#region-selector").on("change", function() {
-            updateCharts();
-          })
-        }
-
-      })
-    })*/
 
     d3.csv("data/grades_students.csv", function(error, csvData) {
         // Format data
