@@ -3,6 +3,7 @@ $icon-font-path: "fonts/";
 // Typography etc from saco's own css
 @import 'variables';
 
+@import 'modules/barchart';
 @import 'modules/forms';
 @import 'modules/sankey';
 @import 'modules/tooltip';

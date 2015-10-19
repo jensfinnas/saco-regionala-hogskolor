@@ -3,7 +3,7 @@ var treeWriters = {
         var context = {
             "home": shortCounty(data[0].home) 
         }
-        var template = "Vad hände med gymnasisterna från {{ home }}?";
+        var template = "Vart flyttade gymnasisterna från {{ home }}?";
         return renderTemplate(template, context);
     },
     "description": function(data) {

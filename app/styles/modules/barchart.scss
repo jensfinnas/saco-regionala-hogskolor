@@ -1,0 +1,31 @@
+#to-county-high-grades,
+#to-county-low-grades {
+    text {
+        font-size: 14px;
+        font-family: "proxima-nova", Arial, sans-serif;
+    }
+    .c3-bar-0 {
+        fill: $saco-turcos !important;
+        fill-opacity: 0.7 !important; 
+    }
+    .c3-bar-1 {
+        fill: $saco-orange !important; 
+        fill-opacity: 0.7 !important;
+    }
+
+    .c3-axis-x {
+        .tick line {
+            display: none;
+        }
+    }
+    .c3-axis-y {
+        .domain {
+            display: none;
+        }
+    }
+    .c3-chart-texts {
+        text {
+            fill: #212424 !important;
+        }
+    }
+}

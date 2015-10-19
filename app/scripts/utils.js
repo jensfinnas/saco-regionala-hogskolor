@@ -5,7 +5,8 @@ function extend(a, b){
     return a;
 }
 
-formatPercent = d3.format("%");
+formatPercent = locale.numberFormat("%");
+formatPercentDecimal = locale.numberFormat(".1%");
 formatPercentText = function(value) {
     return formatPercent(value).replace("%", " procent");
 }
