@@ -47,6 +47,12 @@
       </select>
 
       <div id="tree-chart-container">
+        <div class="loading">
+            <div class="spinner">
+              <div class="dot1"></div>
+              <div class="dot2"></div>
+            </div>
+        </div>
         <h2 class="title"></h2>
         <div class="description"></div>
         <div id="high-grades" class="chart"></div>
@@ -84,7 +90,6 @@
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script src="scripts/locale.js"></script>
         <script src="scripts/grades.barchart.js"></script>
-        <!--<script src="scripts/pies.js"></script>-->
         <script src="scripts/renderTemplate.js"></script>
         <script src="scripts/tree.js"></script>
         <script src="scripts/treeWriters.js"></script>
@@ -154,7 +159,11 @@
             // Update chart
             chart.chart.load({
                 columns:[
-                    ["share", rowCounty.value / rowCounty.total, rowTotal.value / rowTotal.total]
+                    [
+                        "share",
+                        rowCounty.value / rowCounty.total,
+                        rowTotal.value / rowTotal.total
+                    ]
                 ]
             })
 
@@ -164,8 +173,8 @@
 
 
     }
-    var toCountyContainer = d3.select("#to-county-container");
     var treeChartContainer = d3.select("#tree-chart-container");
+    var toCountyContainer = d3.select("#to-county-container");
     var regionSelector = d3.select("#region-selector");
 
     d3.csv("data/grades_students.csv", function(error, treeData) {
@@ -175,19 +184,20 @@
             return d;
         })
         updateTree(treeData);
+        treeChartContainer.select(".loading").classed("hidden", true);
 
-        d3.csv("data/grades_county.csv", function(error, pieData) {
-            pieData = pieData.map(function(d) {
+        d3.csv("data/grades_county.csv", function(error, toCountyData) {
+            toCountyData = toCountyData.map(function(d) {
                 d.value = parseFloat(d.value);
                 d.total = parseFloat(d.total);
                 return d;
             })
             initGradesBarCharts();
-            updateGradesBarCharts(pieData);
-            //updatePies(pieData);
+            updateGradesBarCharts(toCountyData);
+            toCountyContainer.select(".loading").classed("hidden", true);
             d3.select("#region-selector").on("change", function() {
                 updateTree(treeData);
-                updateGradesBarCharts(pieData);
+                updateGradesBarCharts(toCountyData);
             })
         })
           

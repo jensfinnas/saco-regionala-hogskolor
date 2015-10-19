@@ -5,6 +5,7 @@ $icon-font-path: "fonts/";
 
 @import 'modules/barchart';
 @import 'modules/forms';
+@import 'modules/loading';
 @import 'modules/sankey';
 @import 'modules/tooltip';
 @import 'modules/tree';
@@ -13,4 +14,7 @@ $icon-font-path: "fonts/";
 
 .container {
     max-width: 550px;
+}
+.hidden {
+    display: none;
 }

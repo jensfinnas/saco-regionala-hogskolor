@@ -20,7 +20,14 @@
     <!--[if lt IE 9]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-    <div class="container">
+    <div class="loading">
+        <div class="spinner">
+          <div class="dot1"></div>
+          <div class="dot2"></div>
+        </div>
+    </div>
+
+    <div class="container hidden">
 
       <select id="region-selector">
         <option value="Blekinge län">Blekinge län</option>
@@ -45,6 +52,8 @@
         <option value="Örebro län">Örebro län</option>
         <option value="Östergötlands län">Östergötlands län</option>
       </select>
+
+
 
       <div id="follow-students-from-county" class="chart-container">
         <h2 class="title"></h2>
@@ -127,6 +136,9 @@
 
         loadedDataset.push(chart);
         if (loadedDataset.length == charts.length) {
+          d3.selectAll(".loading").classed("hidden", true);
+          d3.select(".container").classed("hidden", false);
+
           updateCharts();
           d3.select("#region-selector").on("change", function() {
             updateCharts();
