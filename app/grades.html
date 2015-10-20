@@ -55,8 +55,8 @@
         </div>
         <h2 class="title"></h2>
         <div class="description"></div>
-        <div id="high-grades" class="chart"></div>
-        <div id="low-grades" class="chart"></div>
+        <div id="high-grades" class="tree-chart"></div>
+        <div id="low-grades" class="tree-chart"></div>
         <div class="conclusions"></div>       
       </div>
 
@@ -65,12 +65,16 @@
         
         <div id="to-county-high-grades" class="bar-chart">
             <h3 class="title"></h3>
-            <div class="chart">
+            <div class="chart"></div>
+            <div class="chart-county pie-chart col-xs-6"></div>
+            <div class="chart-total pie-chart col-xs-6"></div>
         </div>
         
         <div id="to-county-low-grades" class="bar-chart">
             <h3 class="title"></h3>
-            <div class="chart">
+            <div class="chart"></div>
+            <div class="chart-county pie-chart col-xs-6"></div>
+            <div class="chart-total pie-chart col-xs-6"></div>
         </div>
 
       </div>
@@ -90,6 +94,7 @@
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script src="scripts/locale.js"></script>
         <script src="scripts/grades.barchart.js"></script>
+        <script src="scripts/pies.js"></script>
         <script src="scripts/renderTemplate.js"></script>
         <script src="scripts/tree.js"></script>
         <script src="scripts/treeWriters.js"></script>
@@ -167,6 +172,16 @@
                 ]
             })
 
+            for (group in chart.pieCharts) {
+                var value = group == "county" ? rowCounty.value / rowCounty.total : rowTotal.value / rowTotal.total;
+                chart.pieCharts[group].load({
+                    columns: [
+                        ['highlight', value],
+                        ['fade', 1 - value]
+                    ],
+                })
+            }
+
             // Update texts
             toCountyContainer.select("#" + chart.id + " .title").html(chart.writers.title(rowCounty, rowTotal, chart.grades));
         })
@@ -193,6 +208,7 @@
                 return d;
             })
             initGradesBarCharts();
+            initPies();
             updateGradesBarCharts(toCountyData);
             toCountyContainer.select(".loading").classed("hidden", true);
             d3.select("#region-selector").on("change", function() {

@@ -58,7 +58,7 @@ function initGradesBarCharts() {
                     format: formatPercentDecimal
                 },
                 columns: [
-                    ['share', 10, 10],
+                    ['share', 0, 0],
                 ],
                 type: "bar"
             },
@@ -68,6 +68,7 @@ function initGradesBarCharts() {
                     categories: ["I länet", "Hela landet"]
                 },
                 y: {
+                    show: false,
                     max: 0.3,
                     tick: {
                         format: formatPercent

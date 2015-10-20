@@ -35,11 +35,10 @@ $sm-breakpoint: 400px;
 
 
 @media screen and (max-width: $sm-breakpoint) {
-  #tree-chart-container {
-    .chart {
-        text {
-            font-size: 12px;
-        }
+  .tree-chart,
+  .bar-chart {
+    text {
+        font-size: 12px;
     }
   }
 }

@@ -28,4 +28,19 @@
             fill: #212424 !important;
         }
     }
+
+    // Pies
+    .c3-arc-highlight  {
+        fill: $saco-turcos !important;
+        fill-opacity: 0.7 !important; 
+    }
+    .c3-target-fade {
+        path {
+            fill: #DDDEE0 !important;
+        }
+        text {
+            display: none;
+        }
+    }
+    
 }
