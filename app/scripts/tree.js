@@ -42,7 +42,8 @@ Tree = (function() {
 
     self.nodeScale = d3.scale.sqrt()
       .domain(self.opts.domain)
-      .range([1, self.height / self.data[0].children.length]);
+      .range([1, self.height / self.data[0].children.length]);      
+  
 
     // Draw the svg canvas
     self.drawCanvas();
@@ -64,7 +65,7 @@ Tree = (function() {
     var treeData = [];
     data.forEach(function(node) {
       // add to parent
-      var parent = dataMap[node.parent];
+      var parent = dataMap[node.parent_node];
       if (parent) {
         // create child array if it doesn't exist
         (parent.children || (parent.children = []))
