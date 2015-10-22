@@ -57,6 +57,8 @@
         <div class="description"></div>
         <div id="high-grades" class="tree-chart"></div>
         <div id="low-grades" class="tree-chart"></div>
+
+        <h4>Slutsatser</h4>
         <div class="conclusions"></div>       
       </div>
 
@@ -66,15 +68,13 @@
         <div id="to-county-high-grades" class="bar-chart">
             <h3 class="title"></h3>
             <div class="chart"></div>
-            <div class="chart-county pie-chart col-xs-6"></div>
-            <div class="chart-total pie-chart col-xs-6"></div>
+            <div class="description"></div>
         </div>
         
         <div id="to-county-low-grades" class="bar-chart">
             <h3 class="title"></h3>
             <div class="chart"></div>
-            <div class="chart-county pie-chart col-xs-6"></div>
-            <div class="chart-total pie-chart col-xs-6"></div>
+            <div class="description"></div>
         </div>
 
       </div>
@@ -139,6 +139,7 @@
 
         treeChartContainer.select(".title").html(treeWriters.title(data));
         treeChartContainer.select(".description").html(treeWriters.description(data));
+        treeChartContainer.select(".conclusions").html(treeWriters.conclusions(data));
     }
 
     function updateGradesBarCharts(data) {
@@ -172,7 +173,7 @@
                 ]
             })
 
-            for (group in chart.pieCharts) {
+            /*for (group in chart.pieCharts) {
                 var value = group == "county" ? rowCounty.value / rowCounty.total : rowTotal.value / rowTotal.total;
                 chart.pieCharts[group].load({
                     columns: [
@@ -180,10 +181,11 @@
                         ['fade', 1 - value]
                     ],
                 })
-            }
+            }*/
 
             // Update texts
             toCountyContainer.select("#" + chart.id + " .title").html(chart.writers.title(rowCounty, rowTotal, chart.grades));
+            toCountyContainer.select("#" + chart.id + " .description").html(chart.writers.description(selectedRegion));
         })
 
 
@@ -208,7 +210,6 @@
                 return d;
             })
             initGradesBarCharts();
-            initPies();
             updateGradesBarCharts(toCountyData);
             toCountyContainer.select(".loading").classed("hidden", true);
             d3.select("#region-selector").on("change", function() {

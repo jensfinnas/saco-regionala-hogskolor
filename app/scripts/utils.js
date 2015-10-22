@@ -5,6 +5,7 @@ function extend(a, b){
     return a;
 }
 
+// Number and text formating
 formatPercent = locale.numberFormat("%");
 formatPercentDecimal = locale.numberFormat(".1%");
 formatPercentText = function(value) {
@@ -57,4 +58,12 @@ function wrap(text, width) {
     }  
     text.attr("y", -(lineNumber + 1) / 2 * lineHeight * 12);  
   });
+}
+
+// Computations on arrays
+Array.prototype.filterBy = function(key, value) {
+  return this.filter(function(d) { return d[key] == value })
+}
+Array.prototype.sumBy = function(key) {
+  return d3.sum(this.map(function(d) { return d[key] }));
 }

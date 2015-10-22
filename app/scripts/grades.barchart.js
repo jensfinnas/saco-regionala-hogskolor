@@ -38,14 +38,30 @@ var gradesBarChart = [
         id: "to-county-high-grades",
         grades: "high",
         writers: {
-            "title": titleWriter
+            "title": titleWriter,
+            "description": function(home) {
+                var context = {
+                    home: home
+                }
+                template = "Såhär stor andel av studenterna som började studera i {{ home }} hade höga betyg jämfört med andelen som hade höga betyg i hela Sverige.";
+                
+                return renderTemplate(template, context);
+            }
         }
     },
     {
         id: "to-county-low-grades",
         grades: "low",
         writers: {
-            "title": titleWriter
+            "title": titleWriter,
+            "description": function(home) {
+                var context = {
+                    home: home
+                }
+                template = "Såhär stor andel av studenterna som började studera i {{ home }} hade låga betyg jämfört med andelen som hade låga betyg i hela Sverige.";
+                
+                return renderTemplate(template, context);
+            }
         }
     },
 ]
