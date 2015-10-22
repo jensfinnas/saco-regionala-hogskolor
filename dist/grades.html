@@ -1,6 +1,6 @@
 <!DOCTYPE html> <html class=no-js> <head> <meta charset=utf-8> <title>saco regionala hogskolor</title> <meta name=description content=""> <meta name=viewport content="width=device-width"> <link rel="shortcut icon" href=/6df2b309.favicon.ico> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel=stylesheet href=styles/91de9ba9.vendor.css> <link rel=stylesheet href=styles/fc6413df.main.css>  <body> <!--[if lt IE 9]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]--> <div class=container> <select id=region-selector> <option value="Blekinge län">Blekinge län <option value="Dalarnas län">Dalarnas län <option value="Gotlands län">Gotlands län <option value="Gävleborgs län">Gävleborgs län <option value="Hallands län">Hallands län <option value="Jämtlands län">Jämtlands län <option value="Jönköpings län">Jönköpings län <option value="Kalmar län">Kalmar län <option value="Kronobergs län">Kronobergs län <option value="Norrbottens län">Norrbottens län <option value="Skåne län">Skåne län <option value="Stockholms län" selected>Stockholms län <option value="Södermanlands län">Södermanlands län <option value="Uppsala län">Uppsala län <option value="Värmlands län">Värmlands län <option value="Västerbottens län">Västerbottens län <option value="Västernorrlands län">Västernorrlands län <option value="Västmanlands län">Västmanlands län <option value="Västra Götalands län">Västra Götalands län <option value="Örebro län">Örebro län <option value="Östergötlands län">Östergötlands län </select> <div id=tree-chart-container> <div class=loading> <div class=spinner> <div class=dot1></div> <div class=dot2></div> </div> </div> <h2 class=title></h2> <div class=description></div> <div id=high-grades class=tree-chart></div> <div id=low-grades class=tree-chart></div> <div class=conclusions></div> </div> <div id=to-county-container> <h2 class="main title"></h2> <div id=to-county-high-grades class=bar-chart> <h3 class=title></h3> <div class=chart></div> <div class="chart-county pie-chart col-xs-6"></div> <div class="chart-total pie-chart col-xs-6"></div> </div> <div id=to-county-low-grades class=bar-chart> <h3 class=title></h3> <div class=chart></div> <div class="chart-county pie-chart col-xs-6"></div> <div class="chart-total pie-chart col-xs-6"></div> </div> </div> </div> <script src=scripts/438136be.vendor.js></script> <script src=scripts/d0bd0a18.main.js></script> <!-- Saco typography --> <script type=text/javascript src=//use.typekit.net/zxg8sjd.js></script> <script type=text/javascript>try { Typekit.load(); } catch (e) { console.log(e); }</script> <script>function updateTree(data) {
+    <![endif]--> <div class=container> <select id=region-selector> <option value="Blekinge län">Blekinge län <option value="Dalarnas län">Dalarnas län <option value="Gotlands län">Gotlands län <option value="Gävleborgs län">Gävleborgs län <option value="Hallands län">Hallands län <option value="Jämtlands län">Jämtlands län <option value="Jönköpings län">Jönköpings län <option value="Kalmar län">Kalmar län <option value="Kronobergs län">Kronobergs län <option value="Norrbottens län">Norrbottens län <option value="Skåne län">Skåne län <option value="Stockholms län" selected>Stockholms län <option value="Södermanlands län">Södermanlands län <option value="Uppsala län">Uppsala län <option value="Värmlands län">Värmlands län <option value="Västerbottens län">Västerbottens län <option value="Västernorrlands län">Västernorrlands län <option value="Västmanlands län">Västmanlands län <option value="Västra Götalands län">Västra Götalands län <option value="Örebro län">Örebro län <option value="Östergötlands län">Östergötlands län </select> <div id=tree-chart-container> <div class=loading> <div class=spinner> <div class=dot1></div> <div class=dot2></div> </div> </div> <h2 class=title></h2> <div class=description></div> <div id=high-grades class=tree-chart></div> <div id=low-grades class=tree-chart></div> <h4>Slutsatser</h4> <div class=conclusions></div> </div> <div id=to-county-container> <h2 class="main title"></h2> <div id=to-county-high-grades class=bar-chart> <h3 class=title></h3> <div class=chart></div> <div class=description></div> </div> <div id=to-county-low-grades class=bar-chart> <h3 class=title></h3> <div class=chart></div> <div class=description></div> </div> </div> </div> <script src=scripts/438136be.vendor.js></script> <script src=scripts/f69aad41.main.js></script> <!-- Saco typography --> <script type=text/javascript src=//use.typekit.net/zxg8sjd.js></script> <script type=text/javascript>try { Typekit.load(); } catch (e) { console.log(e); }</script> <script>function updateTree(data) {
         var selectedRegion = regionSelector.node().value;
         data = data
             .filter(function(d) { return d.home == selectedRegion; })
@@ -15,15 +15,15 @@
         ["high", "low"].forEach(function(end) {
             // high grades
             var filteredData = data.filter(function(d) {
-              return d.parent == end;
+              return d.parent_node == end;
             });
             filteredData.unshift({
                 "name": end,
-                "parent": null,
+                "parent_node": null,
                 "value": 0.2
             });
 
-            var xLabels = ["Betyg i gymnasiet", "Studieort"]
+            var xLabels = ["Betyg i gymnasiet", "Studieort"];
             new Tree("#" + end + "-grades", filteredData, {
                 domain: domain,
                 //xLabels: xLabels
@@ -32,6 +32,7 @@
 
         treeChartContainer.select(".title").html(treeWriters.title(data));
         treeChartContainer.select(".description").html(treeWriters.description(data));
+        treeChartContainer.select(".conclusions").html(treeWriters.conclusions(data));
     }
 
     function updateGradesBarCharts(data) {
@@ -65,7 +66,7 @@
                 ]
             })
 
-            for (group in chart.pieCharts) {
+            /*for (group in chart.pieCharts) {
                 var value = group == "county" ? rowCounty.value / rowCounty.total : rowTotal.value / rowTotal.total;
                 chart.pieCharts[group].load({
                     columns: [
@@ -73,10 +74,11 @@
                         ['fade', 1 - value]
                     ],
                 })
-            }
+            }*/
 
             // Update texts
             toCountyContainer.select("#" + chart.id + " .title").html(chart.writers.title(rowCounty, rowTotal, chart.grades));
+            toCountyContainer.select("#" + chart.id + " .description").html(chart.writers.description(selectedRegion));
         })
 
 
@@ -101,7 +103,6 @@
                 return d;
             })
             initGradesBarCharts();
-            initPies();
             updateGradesBarCharts(toCountyData);
             toCountyContainer.select(".loading").classed("hidden", true);
             d3.select("#region-selector").on("change", function() {
