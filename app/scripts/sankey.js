@@ -32,7 +32,7 @@ Sankey = (function() {
     self.chartContainer = self.container.append("div")
       .attr('class', 'chart');
 
-    self.margin = m = {top: 10, right: 5, bottom: 40, left: 5};
+    self.margin = m = {top: 10, right: 5, bottom: 30, left: 5};
     self.width = (containerWidth - m.left - m.right);
     self.height = self.width * 0.7;
 
@@ -125,7 +125,7 @@ Sankey = (function() {
     var self = this;
 
     // Set up tooltip
-    var tipLink = d3.tip()
+    self.tipLink = d3.tip()
       .attr('class', 'd3-tip')
       .offset(function(d) {
         if (self.isMobile) {
@@ -155,12 +155,15 @@ Sankey = (function() {
       })
       .html(self.getLinkSentence);
 
-    self.chart.call(tipLink);
+    self.chart.call(self.tipLink);
+    self.chart.on("click", function() {
+      self.tipLink.close();
+    })
 
     // Set the sankey diagram properties
     var sankey = d3.sankey()
         .nodeWidth(36)
-        .nodePadding(6)
+        .nodePadding(0)
         .size([self.width, self.height]);
 
     var path = sankey.link();
@@ -182,8 +185,8 @@ Sankey = (function() {
       .attr("d", path)
       .style("stroke-width", function(d) { return Math.max(1, d.dy); })
       .sort(function(a, b) { return b.dy - a.dy; })
-      .on("mouseover", tipLink.show)
-      .on("mouseout", tipLink.hide);
+      .on("mouseover", self.tipLink.show)
+      .on("mouseout", self.tipLink.hide);
 
     
     // label at link target
