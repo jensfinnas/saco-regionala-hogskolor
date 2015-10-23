@@ -156,9 +156,11 @@ Sankey = (function() {
       .html(self.getLinkSentence);
 
     self.chart.call(self.tipLink);
-    self.chart.on("click", function() {
-      self.tipLink.close();
-    })
+
+    self.chart.append("rect")
+      .attr("width", self.width)
+      .attr("height", self.height)
+      .on("click", self.tipLink.hide);
 
     // Set the sankey diagram properties
     var sankey = d3.sankey()
@@ -216,7 +218,9 @@ Sankey = (function() {
       .enter().append("g")
         .attr("class", function(d) { return "node " + d.class; })
         .attr("transform", function(d) { 
-        return "translate(" + d.x + "," + d.y + ")"; });
+          return "translate(" + d.x + "," + d.y + ")"; 
+        })
+        .on("click", self.tipLink.hide);
 
   // add the rectangles for the nodes
     node.append("rect")
