@@ -2,20 +2,13 @@
 - a data source 
 - a link sentence writer, that is a function the writes a sentence about a link between two nodes
 */
-Array.prototype.filterBy = function(key, value) {
-  return this.filter(function(d) { return d[key] == value })
-}
-Array.prototype.sumBy = function(key) {
-  return d3.sum(this.map(function(d) { return d[key] }));
-}
-
 
 var charts = [
   // Follw all students from county X
   {
     id: "follow-students-from-county",
     csv: "data/follow_students_from_county.csv",
-    xLabels: ["Gymnasielän", "Studielän", "Boendelän 10 år senare"],
+    xLabels: ["Gymnasielän", "Län vid studiestart", "Boendelän 10 år senare"],
     writers: {
       "title": function(data) {
         var context = {
@@ -31,7 +24,7 @@ var charts = [
           "total": formatLargeNum(data[0].total),
           "home": data[0].home
         }
-        var template = "Här har vi följt de {{ total }} gymnasieelever från {{ home }} som började studera på högskolan mellan höstterminen 2000 och vårterminen 2002 och som var 22 år eller yngre det år de började studera.";
+        var template = "Här har vi följt de {{ total }} gymnasieelever från {{ home }} som började studera på högskolan mellan höstterminen 2000 och vårterminen 2003 och som var 22 år eller yngre det år de började studera.";
 
         return renderTemplate(template, context);
       },
@@ -136,7 +129,7 @@ var charts = [
   {
     id: "follow-students-in-county",
     csv: "data/follow_students_in_county.csv",
-    xLabels: ["Hemlän", "Boendelän 10 år senare"],
+    xLabels: ["Gymnasielän", "Boendelän 10 år senare"],
     writers: {
       "title": function(data) {
         var context = {
@@ -152,7 +145,7 @@ var charts = [
           "total": formatLargeNum(data[0].total),
           "home": data[0].home
         }
-        var template = "Här har vi följt de {{ total }} gymnasieelever som började studera på högskola i {{ home }} mellan höstterminen 2000 och vårterminen 2002 och som var 22 år eller yngre det år de började studera.";
+        var template = "Här har vi följt de {{ total }} studenter som började studera på högskola i {{ home }} mellan höstterminen 2000 och vårterminen 2003 och som var 22 år eller yngre det år de började studera.";
 
         return renderTemplate(template, context);
       },
@@ -190,10 +183,10 @@ var charts = [
         */
 
         template = "<ul>";
-        template += "<li>{{ originAway }} av de som studerade i {{ home }} kom från andra län.</li>";
+        template += "<li>{{ originAway }} av de som startade sina studier i {{ home }} kom från andra län.</li>";
         template += "<li>Av dessa hade {{ originAwayLiveAway }} flyttat från {{ home }} tio år senare.</li>";
-        template += "<li>Av de som studerade såväl på gymnasiet som på högskola i {{ home }} bodde {{ originHomeLiveHome }} kvar tio år senare.</li>";
-        template += "<li>Av de som studerade vid högskola i {{ home }} bodde {{ liveHome }} kvar i länet efter tio år.</li>";
+        template += "<li>Av de som studerade såväl på gymnasiet som i högskola i {{ home }} bodde {{ originHomeLiveHome }} kvar tio år senare.</li>";
+        template += "<li>Av de som startade sina studier vid högskola i {{ home }} bodde {{ liveHome }} kvar i länet efter tio år.</li>";
         template += "</ul>";
 
         return renderTemplate(template, context);
