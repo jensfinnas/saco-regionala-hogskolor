@@ -158,7 +158,7 @@ d3.sankey = function() {
   function computeNodeDepths(iterations) {
     var nodesByBreadth = d3.nest()
         .key(function(d) { return d.x; })
-        .sortKeys(d3.ascending)
+        .sortKeys(d3.descending)
         .entries(nodes)
         .map(function(d) { return d.values; });
 
@@ -228,7 +228,10 @@ d3.sankey = function() {
             i;
 
         // Push any overlapping nodes down.
-        nodes.sort(ascendingDepth);
+        nodes.sort(function(a,b) {
+          return d3.ascending(a.id,b.id);
+        })
+        //nodes.sort(descendingDepth);
         for (i = 0; i < n; ++i) {
           node = nodes[i];
           dy = y0 - node.y;
@@ -257,12 +260,21 @@ d3.sankey = function() {
     function ascendingDepth(a, b) {
       return a.id - b.id;
     }
+    function descendingDepth(a, b) {
+      return b.id - a.id;
+    }
   }
 
   function computeLinkDepths() {
     nodes.forEach(function(node) {
-      node.sourceLinks.sort(ascendingTargetDepth);
-      node.targetLinks.sort(ascendingSourceDepth);
+      node.sourceLinks.sort(function(a,b) {
+        return d3.ascending(a.target.id, b.target.id);
+      });
+      node.targetLinks.sort(function(a,b) {
+        return d3.ascending(a.source.id, b.source.id);
+      });
+      /*node.sourceLinks.sort(descendingTargetDepth);
+      node.targetLinks.sort(descendingSourceDepth);*/
     });
     nodes.forEach(function(node) {
       var sy = 0, ty = 0;
@@ -287,6 +299,13 @@ d3.sankey = function() {
 
     function ascendingTargetDepth(a, b) {
       return a.target.id - b.target.id;
+    }
+    function descendingSourceDepth(a, b) {
+      return b.source.id - a.source.id;
+    }
+
+    function descendingTargetDepth(a, b) {
+      return b.target.id - a.target.id;
     }
   }
 
