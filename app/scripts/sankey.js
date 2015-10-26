@@ -157,11 +157,6 @@ Sankey = (function() {
 
     self.chart.call(self.tipLink);
 
-    self.chart.append("rect")
-      .attr("width", self.width)
-      .attr("height", self.height)
-      .on("click", self.tipLink.hide);
-
     // Set the sankey diagram properties
     var sankey = d3.sankey()
         .nodeWidth(36)
@@ -279,6 +274,7 @@ Sankey = (function() {
         })
         .attr("class", "x-label")
         .text(function(d) { return d })
+        .call(wrap, 73);
   };
   Sankey.prototype.updateSentence = function(sentence) {
     var self = this;
