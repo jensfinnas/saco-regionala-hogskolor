@@ -42,7 +42,6 @@ var treeWriters = {
         }*/
         function textifyAmount(diff) {
             diff = Math.abs(diff);
-            console.log(diff);
             if (diff < 0.1) {
                 return "något";
             }

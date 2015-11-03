@@ -79,6 +79,7 @@
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/d3-tip/index.js"></script>
     <script src="bower_components/c3/c3.js"></script>
+    <script src="bower_components/pym.js/dist/pym.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -126,9 +127,21 @@
         chartContainer.select(".title").html(chart.writers.title(data));
         chartContainer.select(".description").html(chart.writers.description(data));
         chartContainer.select(".conclusions").html(chart.writers.conclusions(data));
+
+        // Update iframe
+        if (isIframe) {
+            pymChild.sendHeight();
+        }
       });
       
     }
+
+    var isIframe = self !== top;
+    if (isIframe) {
+        var pymChild = new pym.Child();
+        pymChild.sendHeight();
+    }
+        
 
     var loadedDataset = [];
     charts.forEach(function(chart) {

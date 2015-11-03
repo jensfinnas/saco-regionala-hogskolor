@@ -87,6 +87,7 @@
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/d3-tip/index.js"></script>
     <script src="bower_components/c3/c3.js"></script>
+    <script src="bower_components/pym.js/dist/pym.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -191,6 +192,11 @@
             // Update texts
             toCountyContainer.select("#" + chart.id + " .title").html(chart.writers.title(rowCounty, rowTotal, chart.grades));
             toCountyContainer.select("#" + chart.id + " .description").html(chart.writers.description(selectedRegion));
+
+            // Update iframe
+            if (isIframe) {
+                pymChild.sendHeight();
+            }
         })
 
 
@@ -198,6 +204,12 @@
     var treeChartContainer = d3.select("#tree-chart-container");
     var toCountyContainer = d3.select("#to-county-container");
     var regionSelector = d3.select("#region-selector");
+
+    var isIframe = self !== top;
+    if (isIframe) {
+        var pymChild = new pym.Child();
+        pymChild.sendHeight();
+    }
 
     d3.csv("data/grades_students.csv", function(error, treeData) {
         // Format data
