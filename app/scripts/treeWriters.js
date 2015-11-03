@@ -10,7 +10,7 @@ var treeWriters = {
         var context = {
             "home": data[0].home 
         }
-        var template = "Här har vi följt de studenter med höga respektive låga betyg från {{ home }} som började studera på högskolan mellan höstterminen 2000 och vårterminen 2002 och som var 22 år eller yngre det året de började studera.<br>Bilden visar de sex vanligaste länen där studenter med höga respektive låga betyg från {{ home }} valde att studera.";
+        var template = "Här har vi följt de studenter med höga respektive låga betyg från {{ home }} som började studera på högskolan mellan höstterminen 2000 och vårterminen 2003 och som var 22 år eller yngre det året de började studera.<br>Bilden visar de sex vanligaste länen där studenter med höga respektive låga betyg från {{ home }} valde att studera.";
         return renderTemplate(template, context);
     },
     "conclusions": function(data) {
@@ -42,10 +42,11 @@ var treeWriters = {
         }*/
         function textifyAmount(diff) {
             diff = Math.abs(diff);
-            if (diff < 0.05) {
+            console.log(diff);
+            if (diff < 0.1) {
                 return "något";
             }
-            else if (diff < 0.15) {
+            else if (diff < 0.2) {
                 return "betydligt";
             }
             else if (diff < 0.3) {
@@ -63,11 +64,11 @@ var treeWriters = {
         template = "<ul>";
 
         if (dataHighGradesHome > dataLowGradesHome) {
-            template += "<li>Gymnasister från {{ home }} med höga betyg var {{ diffAmount }} mer benägna att börja studera i hemlänet än studenter med låga betyg.";
+            template += "<li>Studenter från {{ home }} med höga betyg var {{ diffAmount }} mer benägna att börja studera i hemlänet än studenter med låga betyg.";
             template += "<li>{{ highGradesHome }} studenter med höga betyg valde att studera i {{ home }}.</li>";
         }
         else {
-            template += "<li>Gymnasister från {{ home }} med låga betyg var {{ diffAmount }} mer benägna att börja studera i hemlänet än studenter med höga betyg.";            
+            template += "<li>Studenter från {{ home }} med låga betyg var {{ diffAmount }} mer benägna att börja studera i hemlänet än studenter med höga betyg.";            
             template += "<li>{{ lowGradesHome }} studenter med låga betyg valde att studera i {{ home }}.</li>";
         }        
         template += "</ul>";
