@@ -3,11 +3,8 @@ var titleWriter = function(rowCounty, rowTotal, grades) {
     var shareTotal = rowTotal.value / rowTotal.total;
     var diff = shareCounty - shareTotal;
     var amount; 
-    if (diff < -0.06) {
-        amount = "Väldigt få";
-    }
-    else if (diff < -0.04) {
-        amount = "Många"
+    if (diff < -0.04) {
+        amount = "Få"
     }
     else if (diff < -0.01) {
         amount = "Förhållandevis få";
@@ -16,13 +13,10 @@ var titleWriter = function(rowCounty, rowTotal, grades) {
         amount = "Normalmånga";
     }
     else if (diff < 0.04) {
-        amount = "Många"
-    }  
-    else if (diff < 0.06) {
         amount = "Förhållandevis många"
-    }
+    }  
     else {
-        amount = "Väldigt många"
+        amount = "Många"
     }
     context = {
         amount: amount,
@@ -43,7 +37,7 @@ var gradesBarChart = [
                 var context = {
                     home: home
                 }
-                template = "Såhär stor andel av studenterna som började studera i {{ home }} hade höga betyg jämfört med andelen som hade höga betyg i hela Sverige.";
+                template = "Såhär stor andel av studenterna som startade sina studier i {{ home }} hade höga betyg jämfört med andelen som hade höga betyg i hela Sverige.";
                 
                 return renderTemplate(template, context);
             }

@@ -151,7 +151,7 @@
         var max = d3.max(data.map(function(d) { return d.value / d.total; }));
 
         toCountyContainer.select(".title.main")
-            .html("Vilka studenter kom till " + data[2].home + " för att studera?");
+            .html("Vilka betyg hade de som startade sina studier i " + data[2].home + "?");
 
         gradesBarChart.forEach(function(chart) {
             var _data = data.filter(function(d) {

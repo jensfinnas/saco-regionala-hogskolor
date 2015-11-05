@@ -3,14 +3,14 @@ var treeWriters = {
         var context = {
             "home": shortCounty(data[0].home) 
         }
-        var template = "Vart flyttade gymnasisterna från {{ home }}?";
+        var template = "Var startade gymnasisterna från {{ home }} sina studier?";
         return renderTemplate(template, context);
     },
     "description": function(data) {
         var context = {
             "home": data[0].home 
         }
-        var template = "Här har vi följt de studenter med höga respektive låga betyg från {{ home }} som började studera på högskolan mellan höstterminen 2000 och vårterminen 2003 och som var 22 år eller yngre det året de började studera.<br>Bilden visar de sex vanligaste länen där studenter med höga respektive låga betyg från {{ home }} valde att studera.";
+        var template = "Här har vi följt de studenter med höga respektive låga gymnasiebetyg från {{ home }} som började studera på högskolan mellan höstterminen 2000 och vårterminen 2003 och som var 22 år eller yngre det året de började studera.<br>Bilden visar de sex vanligaste länen där studenter med höga respektive låga betyg från {{ home }} startade sina studier.";
         return renderTemplate(template, context);
     },
     "conclusions": function(data) {
